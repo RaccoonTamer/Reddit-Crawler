@@ -3,6 +3,8 @@ The "Reddit Image Crawler" is a Python script that facilitates the extraction an
 
 The Reddit Crawler is a Python script that helps you download and manage images from a specific subreddit on Reddit. With this tool, you can easily fetch image URLs from your favorite subreddit, download the images, delete non-image files, remove duplicate photos, and even rename image files in a folder.
 
+![Reddit Crawler](https://github.com/RaccoonTamer/Reddit-Crawler/assets/133187979/897a9697-b93a-4a6c-88ea-8d8005651b77)
+
 Features:
 
 Fetch and save image URLs from a subreddit to image_urls.txt.
