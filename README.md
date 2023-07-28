@@ -1,6 +1,8 @@
 # Reddit-Crawler
 The Reddit Crawler is a user-friendly Python script that allows you to effortlessly download and manage images from any subreddit on Reddit. The unique aspect of this crawler is that it does not require any Reddit API credentials, making it incredibly easy and fast to use.
 
+Discord Kycoon#1471
+
 ![Reddit Crawler](https://github.com/RaccoonTamer/Reddit-Crawler/assets/133187979/897a9697-b93a-4a6c-88ea-8d8005651b77)
 
 Features:
