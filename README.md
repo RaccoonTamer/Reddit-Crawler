@@ -11,11 +11,9 @@ Simple and Fast: Quickly fetch image URLs and download images in just a few clic
 
 Effortless Management: Delete non-image files, remove duplicate photos, and rename image files effortlessly.
 
-Colorful ASCII Art: The script starts with a vibrant and eye-catching ASCII art logo.
+You can also download the .exe program if you dont feel like compiling the python code yourself (You lazy sloth) 
 
 How It Works:
-
-Run the script, and the colorful ASCII art logo will welcome you to the Reddit Crawler.
 
 Choose from a variety of options, all designed for smooth image management:
 
