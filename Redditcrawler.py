@@ -190,14 +190,34 @@ before_value = None
 downloaded_urls = set()
 
 def fetch_image_urls_from_subreddit(subreddit, num_links):
-    url = f"https://www.reddit.com/r/{subreddit}/new/.json?limit={num_links}"
-    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
-    if response.status_code == 200:
+    # Initialize the lists and variables
+    image_urls = []
+    after = None
+    
+    headers = {"User-Agent": "Mozilla/5.0"}
+    
+    while len(image_urls) < num_links:
+        if after:
+            url = f"https://www.reddit.com/r/{subreddit}/new/.json?limit=100&after={after}"
+        else:
+            url = f"https://www.reddit.com/r/{subreddit}/new/.json?limit=100"
+            
+        response = requests.get(url, headers=headers)
         data = response.json()
-        return [post['data']['url'] for post in data['data']['children']]
-    else:
-        print(Fore.RED + f"Error fetching image URLs: {response.status_code} - {response.text}")
-        return []
+        
+        # Extract image URLs from the current batch of data
+        current_image_urls = [post['data']['url'] for post in data['data']['children']]
+        image_urls.extend(current_image_urls)
+        
+        # Update the 'after' token for the next batch
+        after = data['data']['after']
+        
+        # If there's no 'after' token, we've reached the end of the posts
+        if not after:
+            break
+
+    return image_urls[:num_links]
+
 
 def main_fetch_urls():
     global downloaded_urls
