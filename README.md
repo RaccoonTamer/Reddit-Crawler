@@ -1,45 +1,24 @@
-# Reddit-Crawler
-The Reddit Crawler is a user-friendly Python script that allows you to effortlessly download and manage images and gifs from any subreddit on Reddit. The unique aspect of this crawler is that it does not require any Reddit API credentials, making it incredibly easy and fast to use. Download the pre built .exe or compile the code yourself!!.
+Discord dookie#7175
 
-Image downloading is a bit slow but i am working on a faster downloading code and will update the .exe and main.py file soon
+Reddit Media Downloader 📥
 
-Discord Kycoon#1471
+Want to grab images from Reddit without the hassle? This app makes it easy! You can pick a subreddit, set how many posts you want to pull, and let the app do the rest. It’ll download the images you want and even keep things tidy by making sure you don’t get any duplicates. Plus, it tracks useful details for each image, like the post title, author, upvotes, and when it was uploaded.
 
-![Reddit Crawler](https://github.com/RaccoonTamer/Reddit-Crawler/assets/133187979/897a9697-b93a-4a6c-88ea-8d8005651b77)
+What It Does:
 
-Features:
+Metadata at a Glance: 📝 Each image comes with key info like the title, author, upvotes, and posting time.
 
-No Reddit API required: Fetch and download images without the need for API credentials.
+No Duplicates: 🚫 It remembers which images you've already downloaded, so you won’t get the same ones twice.
 
-Simple and Fast: Quickly fetch image URLs and download images in just a few clicks.
+Fetches New Content: 🔄 The app pulls in the latest media from a subreddit, using smart requests to avoid hitting Reddit’s API limits. It keeps everything running smoothly, even when you’re pulling a lot of posts.
 
-Effortless Management: Delete non-image files, remove duplicate photos, and rename image files effortlessly.
+Easy-to-Use Interface: 🖥️ The simple, clean layout makes navigating a breeze. You can input the subreddit name, choose the number of posts you want, and then see everything in a gallery view to easily browse the images.
 
-How It Works:
+NSFW Content: 🔥 This app also lets you download NSFW images by bypassing Reddit's usual filters, so you can access and save content marked as explicit without any issues.
 
-Choose from a variety of options, all designed for smooth image and gif management:
+Videos Coming Soon: 🎥 Right now, the app only handles images, but video downloads are on the way in the next update. Stay tuned!
 
-Fetch image and gif URLs from your desired subreddit.
-
-Download images/gif from the saved URLs and organize them in a folder.
-
-Delete non-image/gif files from a specified directory.
-
-Remove duplicate images using image hashing.
-
-Rename image/gif files in a folder using custom patterns.
-
-No Reddit API credentials are needed, simplifying the setup process.
-
-Enjoy a seamless experience in exploring, downloading, and organizing images from your favorite subreddit.
-
-GitHub Project:
-
-reddit_crawler.py: The main Python script for the Reddit Crawler.
-
-image_urls.txt: Stores fetched image URLs.
-
-downloaded_urls.txt: Keeps track of downloaded URLs to prevent duplicates.
+Whether you’re a Reddit fan, a curator, or just want to archive cool images from the site (including NSFW), this app is a perfect solution. Forget about manually saving images one by one—let the app take care of it! 🙌
 
 License and Disclaimer:
 
