@@ -1,3 +1,2 @@
-colorama
-Pillow
-requests
+PyQt5==5.15.9
+requests==2.26.0
