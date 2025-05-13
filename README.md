@@ -72,4 +72,4 @@ This project is open-source under the specified license (see LICENSE.txt). Feel 
 
 🙏 Attribution:
 If you use or feature this project in your own work, please provide proper credit by linking back to the GitHub repo:
-🔗 https://github.com/RaccoonTamer/Reddit-Crawler![Uploading RedditCrawler.PNG…]()
+🔗 https://github.com/RaccoonTamer/Reddit-Crawler
