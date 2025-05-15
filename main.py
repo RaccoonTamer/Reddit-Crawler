@@ -1,21 +1,19 @@
 import sys
-import os
 import time
 import requests
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QLineEdit, QTabWidget, QFileDialog, QScrollArea, QGridLayout, QMessageBox,
-    QGraphicsDropShadowEffect
+    QLineEdit, QTabWidget, QScrollArea, QGridLayout, QMessageBox,
+    QComboBox, QGraphicsDropShadowEffect
 )
 from PyQt5.QtGui import QFont, QPixmap, QColor
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PyQt5.QtCore import Qt
 from threads import ImageDownloaderThread
 from dialogs import ImagePreviewDialog
-from utils import download_image
 from duplicates import DuplicatesTab
 from settings import SettingsTab
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 def check_for_update(current_version):
     try:
@@ -65,6 +63,8 @@ class RedditDownloaderApp(QWidget):
         self.setWindowTitle("📥 Reddit Media Downloader")
         self.setGeometry(100, 100, 1000, 800)
         self.setFont(QFont("Segoe UI Emoji", 10))
+        self.image_paths = []  
+        self.last_results = []  
         self.init_ui()
 
     def init_ui(self):
@@ -116,8 +116,10 @@ class RedditDownloaderApp(QWidget):
 
     def init_download_tab(self):
         layout = QVBoxLayout()
+
         header = QLabel("📥 Welcome to Reddit Image Fetcher")
         header.setFont(QFont("Segoe UI Emoji", 16, QFont.Bold))
+        header.setAlignment(Qt.AlignCenter) 
         layout.addWidget(header)
 
         form_layout = QHBoxLayout()
@@ -128,10 +130,33 @@ class RedditDownloaderApp(QWidget):
         start_button = QPushButton("⬇️ Start Download")
         start_button.clicked.connect(self.handle_download)
 
+      
+        self.sort_combo = QComboBox()
+        self.sort_combo.addItems(["Download Order", "Newest", "Oldest", "Highest Score"])
+        self.sort_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #555555;
+                color: white;
+                border: 1px solid #777;
+                padding: 5px;
+                border-radius: 5px;
+                min-width: 130px;
+            }
+            QComboBox:hover {
+                background-color: #666666;
+            }
+            QComboBox::drop-down {
+                border-left: 1px solid #777;
+            }
+        """)
+        self.sort_combo.currentIndexChanged.connect(self.sort_gallery_if_loaded)
+
         form_layout.addWidget(QLabel("📂 Subreddit:"))
         form_layout.addWidget(self.subreddit_input)
         form_layout.addWidget(QLabel("🔢 Posts:"))
         form_layout.addWidget(self.count_input)
+        form_layout.addWidget(QLabel("🔽 Sort By:"))
+        form_layout.addWidget(self.sort_combo)
         form_layout.addWidget(start_button)
 
         layout.addLayout(form_layout)
@@ -172,16 +197,44 @@ class RedditDownloaderApp(QWidget):
 
         self.thread = ImageDownloaderThread(subreddit, count)
         self.thread.progress.connect(self.loading_label.setText)
-        self.thread.images_downloaded.connect(self.display_gallery)
+        self.thread.images_downloaded.connect(self.on_images_downloaded)
         self.thread.finished.connect(self.on_download_finished)
         self.thread.start()
+
+    def on_images_downloaded(self, results):
+        self.last_results = results
+        self.loading_label.hide()
+        self.display_gallery(results)
 
     def on_download_finished(self):
         print("Download finished")
         self.thread = None
 
+    def sort_gallery_if_loaded(self):
+        if hasattr(self, 'last_results') and self.last_results:
+            self.display_gallery(self.last_results)
+
     def display_gallery(self, results):
-        self.loading_label.hide()
+       
+        sort_method = self.sort_combo.currentText()
+
+        def get_sort_key(item):
+           
+            meta = item[1] if isinstance(item, tuple) else item
+            if sort_method == "Newest":
+                return -meta.get("created_utc", 0)
+            elif sort_method == "Oldest":
+                return meta.get("created_utc", 0)
+            elif sort_method == "Highest Score":
+                return -meta.get("score", 0)
+            else: 
+                return 0
+
+        
+        if sort_method != "Download Order":
+            results = sorted(results, key=get_sort_key)
+
+       
         for i in reversed(range(self.gallery_layout.count())):
             widget = self.gallery_layout.itemAt(i).widget()
             if widget:
@@ -190,6 +243,8 @@ class RedditDownloaderApp(QWidget):
         self.row = 0
         self.col = 0
         self.columns = 3
+        self.image_paths = []  
+
         for result in results:
             if isinstance(result, tuple):
                 path, meta = result
@@ -222,11 +277,14 @@ class RedditDownloaderApp(QWidget):
             image_label.setAlignment(Qt.AlignCenter)
             image_label.mousePressEvent = self.make_image_click_handler(path, image_label)
 
+          
+            clean_permalink = meta.get("permalink", "").replace("https://reddit.com", "").replace("https//reddit.com", "")
+
             meta_label = QLabel(f"""
                 <b>{meta.get('title', '')}</b><br>
                 👤 {meta.get('author', '')} | ⬆️ {meta.get('score', 0)}<br>
                 🕒 {time.strftime('%Y-%m-%d %H:%M', time.gmtime(meta.get('created_utc', 0)))}<br>
-                <a href='{meta.get('permalink', '')}'>🔗 Open on Reddit</a>
+                <a href='https://reddit.com{clean_permalink}'>🔗 Open on Reddit</a>
             """)
             meta_label.setTextFormat(Qt.RichText)
             meta_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
@@ -261,6 +319,8 @@ class RedditDownloaderApp(QWidget):
             container_layout.addWidget(meta_label, alignment=Qt.AlignCenter)
             self.gallery_layout.addWidget(container, self.row, self.col)
 
+            self.image_paths.append(path) 
+
             self.col += 1
             if self.col >= self.columns:
                 self.col = 0
@@ -277,7 +337,11 @@ class RedditDownloaderApp(QWidget):
                 padding: 5px;
                 border: 2px solid blue;
             } """)
-            dialog = ImagePreviewDialog(path, self)
+            try:
+                index = self.image_paths.index(path)
+            except ValueError:
+                index = 0
+            dialog = ImagePreviewDialog(self.image_paths, index, self)
             dialog.exec_()
         return handler
 
