@@ -18,6 +18,7 @@ class ImageDownloaderThread(QThread):
         folder = os.path.join(os.getcwd(), self.subreddit)
         os.makedirs(folder, exist_ok=True)
 
+        
         downloaded_file = "downloaded_urls.txt"
         if os.path.exists(downloaded_file):
             with open(downloaded_file, 'r') as f:
@@ -25,11 +26,12 @@ class ImageDownloaderThread(QThread):
         else:
             downloaded_urls = set()
 
+       
         cache_file = f"{self.subreddit}_cache.json"
         if os.path.exists(cache_file):
             with open(cache_file, 'r') as f:
                 cache_data = json.load(f)
-                posts = cache_data.get("urls", [])
+                posts = cache_data.get("posts", [])
                 current_index = cache_data.get("index", 0)
                 after = cache_data.get("after", None)
         else:
@@ -44,8 +46,12 @@ class ImageDownloaderThread(QThread):
             if current_index >= len(posts):
                 self.progress.emit(f"🔁 All cached posts processed. Fetching next 100 posts from u/{self.subreddit}...")
                 try:
-                    posts, after = fetch_subreddit_media_urls(self.subreddit, 100, after=after, return_after=True)
-                    current_index = 0
+                    new_posts, after = fetch_subreddit_media_urls(self.subreddit, 100, after=after, return_after=True)
+                    if not new_posts:
+                        self.progress.emit("🚫 No more posts to fetch.")
+                        break
+                    posts.extend(new_posts)  
+                    current_index = len(posts) - len(new_posts)
                 except Exception as e:
                     self.progress.emit(f"❌ Error fetching more posts: {str(e)}")
                     break
@@ -93,8 +99,9 @@ class ImageDownloaderThread(QThread):
 
             time.sleep(1.2)
 
+        
         cache_data = {
-            "urls": posts,
+            "posts": posts,
             "index": current_index,
             "after": after
         }
